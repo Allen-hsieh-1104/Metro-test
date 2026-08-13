@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台北捷運全路網動態大會考</title>
+    <style>
+        :root {
+            --metro-blue: #0070BD;
+            --metro-green: #008659;
+            --bg-color: #EBF0F5;
+            --card-bg: #FFFFFF;
+        }
+
+        body {
+            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        .quiz-card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+            max-width: 500px;
+            width: 100%;
+            padding: 25px;
+            text-align: center;
+            border-top: 10px solid var(--metro-blue);
+            position: relative;
+        }
+
+        .metro-line-progress {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .line-track {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: #DDD;
+            z-index: 1;
+            transform: translateY(-50%);
+        }
+
+        .line-fill {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            height: 6px;
+            background: var(--metro-blue);
+            z-index: 2;
+            transform: translateY(-50%);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .tag-badge {
+            display: inline-block;
+            padding: 5px 14px;
+            border-radius: 15px;
+            background-color: #E1F0FF;
+            color: var(--metro-blue);
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .mode-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .mode-btn {
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+            border: 1px solid #CCC;
+            background: #FFF;
+            cursor: pointer;
+        }
+
+        .mode-btn.active {
+            background: #333;
+            color: #FFF;
+            border-color: #333;
+        }
+
+        .audio-btn {
+            background-color: var(--metro-blue);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(0,112,189,0.3);
+            margin-bottom: 15px;
+        }
+
+        .audio-btn:active {
+            transform: scale(0.95);
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-btn {
+            background-color: #F8F9FA;
+            border: 2px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 0.95rem;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .option-btn:hover {
+            border-color: var(--metro-blue);
+            background-color: #F0F7FF;
+        }
+
+        .option-btn.correct {
+            background-color: #D4EDDA !important;
+            border-color: #28A745 !important;
+            color: #155724 !important;
+        }
+
+        .option-btn.wrong {
+            background-color: #F8D7DA !important;
+            border-color: #DC3545 !important;
+            color: #721C24 !important;
+        }
+
+        .next-btn {
+            background-color: var(--metro-green);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 15px;
+            display: none;
+            width: 100%;
+        }
+
+        .metro-pass {
+            background: linear-gradient(135deg, #0070BD, #004070);
+            color: white;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: left;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            margin: 15px 0;
+        }
+
+        .metro-pass h2 {
+            margin: 0 0 10px 0;
+            font-size: 1.3rem;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            padding-bottom: 5px;
+        }
+
+        .pass-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 0.95rem;
+        }
+
+        .restart-btn {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-card">
+    <div id="quiz-screen">
+        <span class="tag-badge" id="type-badge">🎲 全路網動態題</span>
+        <h1 style="font-size: 1.3rem; margin: 5px 0;">全路網動態隨機 20 題</h1>
+        
+        <div class="metro-line-progress">
+            <div class="line-track"></div>
+            <div class="line-fill" id="line-fill"></div>
+        </div>
+
+        <div class="mode-container">
+            <button class="mode-btn active" onclick="setMode('normal', this)">標準原音</button>
+            <button class="mode-btn" onclick="setMode('stealth', this)">🥷 鬼鬼祟祟(微音)</button>
+            <button class="mode-btn" onclick="setMode('fast', this)">⚡ 1.5倍疾速</button>
+        </div>
+
+        <p id="question-desc" style="color: #555; font-size: 0.95rem; margin-bottom: 15px; font-weight: bold;"></p>
+
+        <button class="audio-btn" id="audio-btn" onclick="playAudio()">🔊 點擊感應音效</button>
+        <audio id="quiz-audio"></audio>
+
+        <div class="options-container" id="options-container"></div>
+        <button class="next-btn" id="next-btn" onclick="nextQuestion()">刷卡進入下一站 ➔</button>
+    </div>
+
+    <div id="result-screen" style="display: none;">
+        <h1 style="font-size: 1.4rem; color: #333;">🎉 考驗完成！</h1>
+        
+        <div class="metro-pass">
+            <h2>TAIPEI METRO DYNAMIC PASS</h2>
+            <div class="pass-row">
+                <span>稱號稱謂：</span>
+                <strong id="pass-rank">捷運專家</strong>
+            </div>
+            <div class="pass-row">
+                <span>大會考得分：</span>
+                <strong id="pass-score">0 / 20</strong>
+            </div>
+            <div class="pass-row">
+                <span>挑戰模式：</span>
+                <strong id="pass-mode">標準模式</strong>
+            </div>
+            <div class="pass-row">
+                <span>認證單位：</span>
+                <span>台北捷運動態演算考驗中心</span>
+            </div>
+        </div>
+
+        <button class="restart-btn" onclick="restartQuiz()">🔄 現場重新抽 20 題</button>
+    </div>
+</div>
+
+<script>
+    // Web Audio API 模擬悠遊卡感應聲
+    function playBeepSound(isCorrect) {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            if (isCorrect) {
+                osc.frequency.setValueAtTime(880, ctx.currentTime);
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.12);
+            } else {
+                osc.frequency.setValueAtTime(220, ctx.currentTime);
+                gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.3);
+            }
+        } catch(e) {}
+    }
+
+    // ================= 素材庫（Music 資料夾 11 個音效） =================
+    const audioPool = [
+        { src: "Music/淡水信義線.mp3", answer: "淡水信義線", category: "line" },
+        { src: "Music/松山新店線.mp3", answer: "松山新店線", category: "line" },
+        { src: "Music/板南線.mp3", answer: "板南線", category: "line" },
+        { src: "Music/中和新蘆線.mp3", answer: "中和新蘆線", category: "line" },
+        { src: "Music/環狀線.mp3", answer: "環狀線", category: "line" },
+        { src: "Music/三鶯線.mp3", answer: "三鶯線", category: "line" },
+        { src: "Music/開門聲音.mp3", answer: "開門聲音", category: "sound" },
+        { src: "Music/關門聲音.mp3", answer: "關門聲音", category: "sound" },
+        { src: "Music/關門警示音.mp3", answer: "關門警示音", category: "sound" },
+        { src: "Music/終點站.mp3", answer: "終點站廣播/提示", category: "sound" },
+        { src: "Music/轉乘站.mp3", answer: "轉乘站廣播/提示", category: "sound" }
+    ];
+
+    // ================= 全路網 100% 完整車站與色彩資料庫 =================
+    const linesData = [
+        { 
+            name: "淡水信義線", 
+            color: "紅色", 
+            allStations: ["淡水", "紅樹林", "竹圍", "關渡", "忠義", "復興崗", "北投", "奇岩", "唭哩岸", "石牌", "明德", "芝山", "士林", "劍潭", "圓山", "民權西路", "雙連", "中山", "台北車站", "台大醫院", "中正紀念堂", "東門", "大安森林公園", "大安", "信義安和", "台北101/世貿", "象山"]
+        },
+        { 
+            name: "松山新店線", 
+            color: "綠色", 
+            allStations: ["松山", "南京三民", "台北小巨蛋", "南京復興", "松江南京", "中山", "北門", "西門", "小南門", "中正紀念堂", "古亭", "台電大樓", "公館", "萬隆", "景美", "大坪林", "七張", "新店區公所", "新店", "小碧潭"]
+        },
+        { 
+            name: "板南線", 
+            color: "藍色", 
+            allStations: ["南港展覽館", "南港", "昆陽", "後山埤", "永春", "市政府", "國父紀念館", "忠孝敦化", "忠孝復興", "忠孝新生", "善導寺", "台北車站", "西門", "龍山寺", "江子翠", "新埔", "板橋", "府中", "亞東醫院", "海山", "土城", "永寧", "頂埔"]
+        },
+        { 
+            name: "中和新蘆線", 
+            color: "橘色", 
+            allStations: ["南勢角", "景安", "永安市場", "頂溪", "古亭", "東門", "忠孝新生", "松江南京", "行天宮", "中山國小", "民權西路", "大橋頭", "三重國小", "三和國中", "徐匯中學", "三民高中", "蘆洲", "三重", "菜寮", "先嗇宮", "頭前庄", "新莊", "輔大", "丹鳳", "迴龍"]
+        },
+        { 
+            name: "環狀線", 
+            color: "黃色", 
+            allStations: ["新北產業園區", "幸福", "頭前庄", "新埔民生", "板橋", "板新", "中原", "橋和", "中和", "景安", "景平", "秀朗橋", "十四張", "大坪林"]
+        },
+        { 
+            name: "三鶯線", 
+            color: "天藍色", 
+            allStations: ["頂埔", "媽祖田", "椚樹腳", "埔頂", "富州", "三峽", "台北大學", "鶯歌", "陶瓷老街", "國華", "鶯歌桃福", "鳳鳴"]
+        }
+    ];
+
+    const soundOptionsPool = ["開門聲音", "關門聲音", "關門警示音", "終點站廣播/提示", "轉乘站廣播/提示", "進站警示音", "緊急求救音"];
+
+    // 陣列隨機函數工具
+    function getRandomItem(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function shuffle(arr) {
+        return [...arr].sort(() => Math.random() - 0.5);
+    }
+
+    function getRandomSample(arr, count) {
+        return shuffle(arr).slice(0, count);
+    }
+
+    // ================= 現場動態隨機組題生成器 =================
+    function generateDynamicQuestions(totalCount = 20) {
+        const questions = [];
+
+        for (let i = 0; i < totalCount; i++) {
+            // 隨機抽題型：0: 音效/音樂題, 1: 路線色彩題, 2: 路線車站組合題
+            const type = Math.floor(Math.random() * 3);
+
+            if (type === 0) {
+                // 音效與進站音樂題
+                const targetAudio = getRandomItem(audioPool);
+                let distractorPool = [];
+
+                if (targetAudio.category === "line") {
+                    distractorPool = linesData.map(l => l.name).filter(n => n !== targetAudio.answer);
+                } else {
+                    distractorPool = soundOptionsPool.filter(s => s !== targetAudio.answer);
+                }
+
+                const wrongOptions = shuffle(distractorPool).slice(0, 3);
+                const options = shuffle([targetAudio.answer, ...wrongOptions]);
+
+                questions.push({
+                    type: "audio",
+                    audioSrc: targetAudio.src,
+                    question: "請聽這段音效/音樂，請問這是什麼？",
+                    correctText: targetAudio.answer,
+                    options: options
+                });
+
+            } else if (type === 1) {
+                // 路線官方色彩題
+                const targetLine = getRandomItem(linesData);
+                const allColors = linesData.map(l => l.color);
+                const wrongColors = shuffle(allColors.filter(c => c !== targetLine.color)).slice(0, 3);
+                const options = shuffle([targetLine.color, ...wrongColors]);
+
+                questions.push({
+                    type: "text",
+                    question: `請問「${targetLine.name}」的官方代表顏色是什麼？`,
+                    correctText: targetLine.color,
+                    options: options
+                });
+
+            } else {
+                // 路線車站組合題 (從路線全車站中動態隨機抽取 3 個)
+                const targetLine = getRandomItem(linesData);
+                const correctStations = getRandomSample(targetLine.allStations, 3).join("、");
+
+                // 抓取其他路線，各動態抽 3 個車站作為干擾選項
+                const wrongLines = linesData.filter(l => l.name !== targetLine.name);
+                const wrongStationGroups = shuffle(wrongLines).slice(0, 3).map(l => {
+                    return getRandomSample(l.allStations, 3).join("、");
+                });
+
+                const options = shuffle([correctStations, ...wrongStationGroups]);
+
+                questions.push({
+                    type: "text",
+                    question: `下列哪一個選項的車站，全部屬於「${targetLine.name}」？`,
+                    correctText: correctStations,
+                    options: options
+                });
+            }
+        }
+        return questions;
+    }
+
+    // ================= 邏輯控制 =================
+    let examQuestions = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let answered = false;
+    let playMode = 'normal';
+
+    const audioPlayer = document.getElementById('quiz-audio');
+    const optionsContainer = document.getElementById('options-container');
+    const nextBtn = document.getElementById('next-btn');
+    const audioBtn = document.getElementById('audio-btn');
+
+    function setMode(mode, btn) {
+        playMode = mode;
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    function initQuiz() {
+        // 現場動態隨機生成 20 題
+        examQuestions = generateDynamicQuestions(20);
+
+        currentQuestionIndex = 0;
+        score = 0;
+        document.getElementById('quiz-screen').style.display = 'block';
+        document.getElementById('result-screen').style.display = 'none';
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        answered = false;
+        nextBtn.style.display = "none";
+        const data = examQuestions[currentQuestionIndex];
+
+        const progressPercent = ((currentQuestionIndex + 1) / examQuestions.length) * 100;
+        document.getElementById('line-fill').style.width = `${progressPercent}%`;
+
+        document.getElementById('question-desc').innerText = `第 ${currentQuestionIndex + 1} 題 / 共 ${examQuestions.length} 題\n${data.question}`;
+        optionsContainer.innerHTML = "";
+
+        if (data.type === 'audio') {
+            document.getElementById('type-badge').innerText = '🔊 現場隨機聽音題';
+            audioBtn.style.display = 'inline-flex';
+            audioPlayer.src = data.audioSrc;
+        } else {
+            document.getElementById('type-badge').innerText = '🎲 現場隨機知識題';
+            audioBtn.style.display = 'none';
+            audioPlayer.src = "";
+        }
+
+        data.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = `${String.fromCharCode(65 + idx)}. ${opt}`;
+            btn.dataset.correct = (opt === data.correctText);
+            btn.onclick = () => selectOption(btn);
+            optionsContainer.appendChild(btn);
+        });
+    }
+
+    function playAudio() {
+        if (!audioPlayer.src) return;
+        
+        if (playMode === 'stealth') {
+            audioPlayer.volume = 0.15;
+            audioPlayer.playbackRate = 1.0;
+        } else if (playMode === 'fast') {
+            audioPlayer.volume = 1.0;
+            audioPlayer.playbackRate = 1.5;
+        } else {
+            audioPlayer.volume = 1.0;
+            audioPlayer.playbackRate = 1.0;
+        }
+
+        audioPlayer.play();
+    }
+
+    function selectOption(btn) {
+        if (answered) return;
+        answered = true;
+
+        const isCorrect = btn.dataset.correct === "true";
+        playBeepSound(isCorrect);
+
+        if (isCorrect) {
+            btn.classList.add('correct');
+            score++;
+        } else {
+            btn.classList.add('wrong');
+            optionsContainer.querySelectorAll('.option-btn').forEach(b => {
+                if (b.dataset.correct === "true") b.classList.add('correct');
+            });
+        }
+
+        optionsContainer.querySelectorAll('.option-btn').forEach(b => b.style.pointerEvents = 'none');
+        nextBtn.style.display = "block";
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < examQuestions.length) {
+            loadQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        document.getElementById('quiz-screen').style.display = 'none';
+        document.getElementById('result-screen').style.display = 'block';
+
+        const total = examQuestions.length;
+        document.getElementById('pass-score').innerText = `${score} / ${total}`;
+        
+        let modeName = "標準模式";
+        if (playMode === 'stealth') modeName = "🥷 鬼鬼祟祟模式";
+        if (playMode === 'fast') modeName = "⚡ 1.5倍疾速模式";
+        document.getElementById('pass-mode').innerText = modeName;
+
+        let rank = "捷運普通卡";
+        const ratio = score / total;
+        if (ratio === 1) rank = "🏆 捷運神級站長 Pass";
+        else if (ratio >= 0.8) rank = "💳 捷運資深司機 Pass";
+        else if (ratio >= 0.5) rank = "🎫 捷運忠實常客 Pass";
+        
+        document.getElementById('pass-rank').innerText = rank;
+    }
+
+    function restartQuiz() {
+        initQuiz();
+    }
+
+    initQuiz();
+</script>
+
+</body>
+</html>
