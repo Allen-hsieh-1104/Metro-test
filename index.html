@@ -258,7 +258,6 @@
 </div>
 
 <script>
-    // Web Audio API 模擬悠遊卡感應聲
     function playBeepSound(isCorrect) {
         try {
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -281,19 +280,19 @@
         } catch(e) {}
     }
 
-    // ================= 素材庫（Music 資料夾 11 個音效） =================
+    // ================= 素材庫（修改處：移除 Music/ 前綴） =================
     const audioPool = [
-        { src: "Music/淡水信義線.mp3", answer: "淡水信義線", category: "line" },
-        { src: "Music/松山新店線.mp3", answer: "松山新店線", category: "line" },
-        { src: "Music/板南線.mp3", answer: "板南線", category: "line" },
-        { src: "Music/中和新蘆線.mp3", answer: "中和新蘆線", category: "line" },
-        { src: "Music/環狀線.mp3", answer: "環狀線", category: "line" },
-        { src: "Music/三鶯線.mp3", answer: "三鶯線", category: "line" },
-        { src: "Music/開門聲音.mp3", answer: "開門聲音", category: "sound" },
-        { src: "Music/關門聲音.mp3", answer: "關門聲音", category: "sound" },
-        { src: "Music/關門警示音.mp3", answer: "關門警示音", category: "sound" },
-        { src: "Music/終點站.mp3", answer: "終點站廣播/提示", category: "sound" },
-        { src: "Music/轉乘站.mp3", answer: "轉乘站廣播/提示", category: "sound" }
+        { src: "淡水信義線.mp3", answer: "淡水信義線", category: "line" },
+        { src: "松山新店線.mp3", answer: "松山新店線", category: "line" },
+        { src: "板南線.mp3", answer: "板南線", category: "line" },
+        { src: "中和新蘆線.mp3", answer: "中和新蘆線", category: "line" },
+        { src: "環狀線.mp3", answer: "環狀線", category: "line" },
+        { src: "三鶯線.mp3", answer: "三鶯線", category: "line" },
+        { src: "開門聲音.mp3", answer: "開門聲音", category: "sound" },
+        { src: "關門聲音.mp3", answer: "關門聲音", category: "sound" },
+        { src: "關門警示音.mp3", answer: "關門警示音", category: "sound" },
+        { src: "終點站.mp3", answer: "終點站廣播/提示", category: "sound" },
+        { src: "轉乘站.mp3", answer: "轉乘站廣播/提示", category: "sound" }
     ];
 
     // ================= 全路網 100% 完整車站與色彩資料庫 =================
@@ -332,7 +331,6 @@
 
     const soundOptionsPool = ["開門聲音", "關門聲音", "關門警示音", "終點站廣播/提示", "轉乘站廣播/提示", "進站警示音", "緊急求救音"];
 
-    // 陣列隨機函數工具
     function getRandomItem(arr) {
         return arr[Math.floor(Math.random() * arr.length)];
     }
@@ -345,16 +343,13 @@
         return shuffle(arr).slice(0, count);
     }
 
-    // ================= 現場動態隨機組題生成器 =================
     function generateDynamicQuestions(totalCount = 20) {
         const questions = [];
 
         for (let i = 0; i < totalCount; i++) {
-            // 隨機抽題型：0: 音效/音樂題, 1: 路線色彩題, 2: 路線車站組合題
             const type = Math.floor(Math.random() * 3);
 
             if (type === 0) {
-                // 音效與進站音樂題
                 const targetAudio = getRandomItem(audioPool);
                 let distractorPool = [];
 
@@ -376,7 +371,6 @@
                 });
 
             } else if (type === 1) {
-                // 路線官方色彩題
                 const targetLine = getRandomItem(linesData);
                 const allColors = linesData.map(l => l.color);
                 const wrongColors = shuffle(allColors.filter(c => c !== targetLine.color)).slice(0, 3);
@@ -390,11 +384,9 @@
                 });
 
             } else {
-                // 路線車站組合題 (從路線全車站中動態隨機抽取 3 個)
                 const targetLine = getRandomItem(linesData);
                 const correctStations = getRandomSample(targetLine.allStations, 3).join("、");
 
-                // 抓取其他路線，各動態抽 3 個車站作為干擾選項
                 const wrongLines = linesData.filter(l => l.name !== targetLine.name);
                 const wrongStationGroups = shuffle(wrongLines).slice(0, 3).map(l => {
                     return getRandomSample(l.allStations, 3).join("、");
@@ -413,7 +405,6 @@
         return questions;
     }
 
-    // ================= 邏輯控制 =================
     let examQuestions = [];
     let currentQuestionIndex = 0;
     let score = 0;
@@ -432,7 +423,6 @@
     }
 
     function initQuiz() {
-        // 現場動態隨機生成 20 題
         examQuestions = generateDynamicQuestions(20);
 
         currentQuestionIndex = 0;
