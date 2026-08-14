@@ -36,50 +36,6 @@
             position: relative;
         }
 
-        /* 歡迎 / 難度選擇畫面樣式 */
-        .difficulty-options {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin: 20px 0;
-        }
-
-        .diff-select-btn {
-            padding: 15px;
-            border: 2px solid #E2E8F0;
-            border-radius: 12px;
-            background-color: #F8F9FA;
-            font-size: 1.05rem;
-            font-weight: bold;
-            color: #333;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: left;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .diff-select-btn.selected {
-            border-color: var(--metro-blue);
-            background-color: #E1F0FF;
-            color: var(--metro-blue);
-        }
-
-        .start-btn {
-            background-color: var(--metro-green);
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 12px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            width: 100%;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,134,89,0.3);
-            margin-top: 10px;
-        }
-
         .metro-line-progress {
             display: flex;
             align-items: center;
@@ -127,6 +83,37 @@
             color: #D93838;
         }
 
+        /* 難度選擇選單 */
+        .difficulty-selector {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            background: #F0F4F8;
+            padding: 6px;
+            border-radius: 12px;
+        }
+
+        .diff-btn {
+            flex: 1;
+            padding: 8px 5px;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .diff-btn.active {
+            background: var(--metro-blue);
+            color: white;
+            box-shadow: 0 2px 8px rgba(0,112,189,0.3);
+        }
+
+        /* 提示按鈕區域 */
         .hint-container {
             margin-bottom: 15px;
         }
@@ -150,6 +137,7 @@
             cursor: not-allowed;
         }
 
+        /* 提示圖片彈窗/展示區 */
         .map-modal {
             display: none;
             margin-top: 10px;
@@ -199,6 +187,10 @@
             transition: all 0.2s;
             box-shadow: 0 4px 12px rgba(0,112,189,0.3);
             margin-bottom: 15px;
+        }
+
+        .audio-btn:active {
+            transform: scale(0.95);
         }
 
         .options-container {
@@ -290,31 +282,15 @@
 <body>
 
 <div class="quiz-card">
-    <div id="start-screen">
-        <h1 style="font-size: 1.5rem; color: var(--metro-blue); margin-bottom: 5px;">🚇 台北捷運大會考</h1>
-        <p style="color: #666; font-size: 0.9rem; margin-top: 0;">請選擇挑戰難度開始遊戲：</p>
-
-        <div class="difficulty-options">
-            <button class="diff-select-btn selected" id="opt-easy" onclick="selectDifficultyOption('easy')">
-                <span>🐣 簡單模式 (實習乘務員)</span>
-                <small style="font-size:0.75rem; color:#666;">無限提示 / 聽音與顏色</small>
-            </button>
-            <button class="diff-select-btn" id="opt-normal" onclick="selectDifficultyOption('normal')">
-                <span>💳 一般模式 (隨行常客)</span>
-                <small style="font-size:0.75rem; color:#666;">限 3 次提示 / 生活轉乘</small>
-            </button>
-            <button class="diff-select-btn" id="opt-hard" onclick="selectDifficultyOption('hard')">
-                <span>👑 困難模式 (特勤站長)</span>
-                <small style="font-size:0.75rem; color:#666;">無提示 / 含神級魔王題</small>
-            </button>
+    <div id="quiz-screen">
+        <div class="difficulty-selector">
+            <button class="diff-btn active" id="btn-easy" onclick="changeDifficulty('easy')">🐣 簡單</button>
+            <button class="diff-btn" id="btn-normal" onclick="changeDifficulty('normal')">💳 一般</button>
+            <button class="diff-btn" id="btn-hard" onclick="changeDifficulty('hard')">👑 困難</button>
         </div>
 
-        <button class="start-btn" onclick="startQuizGame()">🚀 刷卡進站開始大挑戰</button>
-    </div>
-
-    <div id="quiz-screen" style="display: none;">
         <span class="tag-badge" id="type-badge">🎲 全路網動態題</span>
-        <h1 style="font-size: 1.2rem; margin: 5px 0;" id="quiz-title-diff">台北捷運大會考</h1>
+        <h1 style="font-size: 1.3rem; margin: 5px 0;">台北捷運大會考</h1>
         
         <div class="metro-line-progress">
             <div class="line-track"></div>
@@ -330,8 +306,8 @@
         <div class="hint-container">
             <button class="hint-btn" id="hint-btn" onclick="toggleMapHint()">💡 查看路線圖提示 (<span id="hint-count">無限</span>)</button>
             <div class="map-modal" id="map-modal">
-                <p style="font-size:0.8rem; color:#888; margin:2px 0 5px 0;">🗺️ 捷運路線圖（點擊可查看答案線索）</p>
-                <img src="map.png" alt="台北捷運路線圖" id="metro-map-img">
+                <p style="font-size:0.8rem; color:#888; margin:2px 0 5px 0;">🗺️ 台北捷運路線圖小幫手</p>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/ thumb/3/3d/Taipei_Metro_map_20200131.png/800px-Taipei_Metro_map_20200131.png" alt="台北捷運路線圖" id="metro-map-img">
             </div>
         </div>
 
@@ -367,7 +343,7 @@
             </div>
         </div>
 
-        <button class="restart-btn" onclick="backToMenu()">🔄 返回選單重新選擇難度</button>
+        <button class="restart-btn" onclick="restartQuiz()">🔄 現場重新抽 20 題</button>
     </div>
 </div>
 
@@ -409,33 +385,103 @@
     ];
 
     const linesData = [
-        { name: "淡水信義線", color: "紅色", allStations: ["淡水", "紅樹林", "竹圍", "關渡", "忠義", "復興崗", "北投", "奇岩", "唭哩岸", "石牌", "明德", "芝山", "士林", "劍潭", "圓山", "民權西路", "雙連", "中山", "台北車站", "台大醫院", "中正紀念堂", "東門", "大安森林公園", "大安", "信義安和", "台北101/世貿", "象山"] },
-        { name: "松山新店線", color: "綠色", allStations: ["松山", "南京三民", "台北小巨蛋", "南京復興", "松江南京", "中山", "北門", "西門", "小南門", "中正紀念堂", "古亭", "台電大樓", "公館", "萬隆", "景美", "大坪林", "七張", "新店區公所", "新店", "小碧潭"] },
-        { name: "板南線", color: "藍色", allStations: ["南港展覽館", "南港", "昆陽", "後山埤", "永春", "市政府", "國父紀念館", "忠孝敦化", "忠孝復興", "忠孝新生", "善導寺", "台北車站", "西門", "龍山寺", "江子翠", "新埔", "板橋", "府中", "亞東醫院", "海山", "土城", "永寧", "頂埔"] },
-        { name: "中和新蘆線", color: "橘色", allStations: ["南勢角", "景安", "永安市場", "頂溪", "古亭", "東門", "忠孝新生", "松江南京", "行天宮", "中山國小", "民權西路", "大橋頭", "三重國小", "三和國中", "徐匯中學", "三民高中", "蘆洲", "三重", "菜寮", "先嗇宮", "頭前庄", "新莊", "輔大", "丹鳳", "迴龍"] },
-        { name: "環狀線", color: "黃色", allStations: ["新北產業園區", "幸福", "頭前庄", "新埔民生", "板橋", "板新", "中原", "橋和", "中和", "景安", "景平", "秀朗橋", "十四張", "大坪林"] },
-        { name: "三鶯線", color: "天藍色", allStations: ["頂埔", "媽祖田", "椚樹腳", "埔頂", "富州", "三峽", "台北大學", "鶯歌", "陶瓷老街", "國華", "鶯歌桃福", "鳳鳴"] }
+        { 
+            name: "淡水信義線", 
+            color: "紅色", 
+            allStations: ["淡水", "紅樹林", "竹圍", "關渡", "忠義", "復興崗", "北投", "奇岩", "唭哩岸", "石牌", "明德", "芝山", "士林", "劍潭", "圓山", "民權西路", "雙連", "中山", "台北車站", "台大醫院", "中正紀念堂", "東門", "大安森林公園", "大安", "信義安和", "台北101/世貿", "象山"]
+        },
+        { 
+            name: "松山新店線", 
+            color: "綠色", 
+            allStations: ["松山", "南京三民", "台北小巨蛋", "南京復興", "松江南京", "中山", "北門", "西門", "小南門", "中正紀念堂", "古亭", "台電大樓", "公館", "萬隆", "景美", "大坪林", "七張", "新店區公所", "新店", "小碧潭"]
+        },
+        { 
+            name: "板南線", 
+            color: "藍色", 
+            allStations: ["南港展覽館", "南港", "昆陽", "後山埤", "永春", "市政府", "國父紀念館", "忠孝敦化", "忠孝復興", "忠孝新生", "善導寺", "台北車站", "西門", "龍山寺", "江子翠", "新埔", "板橋", "府中", "亞東醫院", "海山", "土城", "永寧", "頂埔"]
+        },
+        { 
+            name: "中和新蘆線", 
+            color: "橘色", 
+            allStations: ["南勢角", "景安", "永安市場", "頂溪", "古亭", "東門", "忠孝新生", "松江南京", "行天宮", "中山國小", "民權西路", "大橋頭", "三重國小", "三和國中", "徐匯中學", "三民高中", "蘆洲", "三重", "菜寮", "先嗇宮", "頭前庄", "新莊", "輔大", "丹鳳", "迴龍"]
+        },
+        { 
+            name: "環狀線", 
+            color: "黃色", 
+            allStations: ["新北產業園區", "幸福", "頭前庄", "新埔民生", "板橋", "板新", "中原", "橋和", "中和", "景安", "景平", "秀朗橋", "十四張", "大坪林"]
+        },
+        { 
+            name: "三鶯線", 
+            color: "天藍色", 
+            allStations: ["頂埔", "媽祖田", "椚樹腳", "埔頂", "富州", "三峽", "台北大學", "鶯歌", "陶瓷老街", "國華", "鶯歌桃福", "鳳鳴"]
+        }
     ];
 
     const lifeScenarios = [
-        { person: "小明", from: "丹鳳站（中和新蘆線）", to: "台北車站", correctTransferStation: "民權西路站 / 忠孝新生站", wrongStations: ["大坪林站", "南京復興站", "忠孝復興站"] },
-        { person: "小華", from: "板橋站（板南線）", to: "中山站", correctTransferStation: "台北車站", wrongStations: ["忠孝新生站", "東門站", "景安站"] },
-        { person: "阿強", from: "公館站（松山新店線）", to: "市政府站", correctTransferStation: "西門站 / 中正紀念堂站", wrongStations: ["民權西路站", "南勢角站", "頭前庄站"] }
+        {
+            person: "小明",
+            from: "丹鳳站（中和新蘆線）",
+            to: "台北車站",
+            correctTransferStation: "民權西路站 / 忠孝新生站",
+            correctLines: "中和新蘆線 ➔ 淡水信義線 / 板南線",
+            wrongStations: ["大坪林站", "南京復興站", "忠孝復興站"],
+            wrongLines: ["中和新蘆線 ➔ 松山新店線", "板南線 ➔ 環狀線", "淡水信義線 ➔ 文湖線"]
+        },
+        {
+            person: "小華",
+            from: "板橋站（板南線）",
+            to: "中山站",
+            correctTransferStation: "台北車站",
+            correctLines: "板南線 ➔ 淡水信義線",
+            wrongStations: ["忠孝新生站", "東門站", "景安站"],
+            wrongLines: ["板南線 ➔ 松山新店線", "中和新蘆線 ➔ 淡水信義線", "環狀線 ➔ 板南線"]
+        },
+        {
+            person: "阿強",
+            from: "公館站（松山新店線）",
+            to: "市政府站",
+            correctTransferStation: "西門站 / 中正紀念堂站",
+            correctLines: "松山新店線 ➔ 板南線 / 淡水信義線",
+            wrongStations: ["民權西路站", "南勢角站", "頭前庄站"],
+            wrongLines: ["松山新店線 ➔ 中和新蘆線", "淡水信義線 ➔ 環狀線", "中和新蘆線 ➔ 板南線"]
+        }
     ];
 
     const godQuestions = [
-        { question: "【神級魔王題】請問下列哪一個轉乘站「沒有」與中和新蘆線交會？", correctText: "忠孝復興站", options: ["忠孝復興站", "民權西路站", "忠孝新生站", "松江南京站"] },
-        { question: "【神級魔王題】台北捷運路網中，淡水信義線與松山新店線共交會於哪兩個車站？", correctText: "中山站、中正紀念堂站", options: ["中山站、中正紀念堂站", "台北車站、西門站", "東門站、古亭站", "民權西路站、松江南京站"] },
-        { question: "【神級魔王題】中和新蘆線往北過「大橋頭站」後，會分岔為往哪兩個終點站的路線？", correctText: "迴龍 / 蘆洲", options: ["迴龍 / 蘆洲", "南勢角 / 新竹", "淡水 / 象山", "松山 / 新店"] }
+        {
+            question: "【神級魔王題】請問下列哪一個轉乘站「沒有」與中和新蘆線交會？",
+            correctText: "忠孝復興站",
+            options: ["忠孝復興站", "民權西路站", "忠孝新生站", "松江南京站"]
+        },
+        {
+            question: "【神級魔王題】台北捷運路網中，淡水信義線與松山新店線共交會於哪兩個車站？",
+            correctText: "中山站、中正紀念堂站",
+            options: ["中山站、中正紀念堂站", "台北車站、西門站", "東門站、古亭站", "民權西路站、松江南京站"]
+        },
+        {
+            question: "【神級魔王題】中和新蘆線往北過「大橋頭站」後，會分岔為往哪兩個終點站的路線？",
+            correctText: "迴龍 / 蘆洲",
+            options: ["迴龍 / 蘆洲", "南勢角 / 新竹", "淡水 / 象山", "松山 / 新店"]
+        }
     ];
 
     const soundOptionsPool = ["開門聲音", "關門聲音", "關門警示音", "終點站廣播/提示音", "轉乘站廣播/提示音", "進站警示音", "緊急求救音"];
 
-    function getRandomItem(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-    function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+    function getRandomItem(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+    }
 
-    let selectedDifficulty = 'easy'; // easy, normal, hard
-    let remainingHints = Infinity;
+    function shuffle(arr) {
+        return [...arr].sort(() => Math.random() - 0.5);
+    }
+
+    function getRandomSample(arr, count) {
+        return shuffle(arr).slice(0, count);
+    }
+
+    // 狀態變數
+    let currentDifficulty = 'easy'; // easy, normal, hard
+    let remainingHints = Infinity;  // 剩餘提示次數
     let examQuestions = [];
     let currentQuestionIndex = 0;
     let score = 0;
@@ -449,29 +495,22 @@
     const hintBtn = document.getElementById('hint-btn');
     const mapModal = document.getElementById('map-modal');
 
-    // 切換選單上的難度標籤
-    function selectDifficultyOption(diff) {
-        selectedDifficulty = diff;
-        document.querySelectorAll('.diff-select-btn').forEach(b => b.classList.remove('selected'));
-        document.getElementById(`opt-${diff}`).classList.add('selected');
-    }
+    // 切換難度
+    function changeDifficulty(diff) {
+        currentDifficulty = diff;
+        document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(`btn-${diff}`).classList.add('active');
 
-    // 開始遊戲按鈕
-    function startQuizGame() {
-        if (selectedDifficulty === 'easy') {
+        // 設定提示次數
+        if (diff === 'easy') {
             remainingHints = Infinity;
-            document.getElementById('quiz-title-diff').innerText = "🐣 簡單模式大會考";
-        } else if (selectedDifficulty === 'normal') {
+        } else if (diff === 'normal') {
             remainingHints = 3;
-            document.getElementById('quiz-title-diff').innerText = "💳 一般模式大會考";
         } else {
             remainingHints = 0;
-            document.getElementById('quiz-title-diff').innerText = "👑 困難模式大會考";
         }
 
         updateHintUI();
-        document.getElementById('start-screen').style.display = 'none';
-        document.getElementById('quiz-screen').style.display = 'block';
         initQuiz();
     }
 
@@ -502,42 +541,110 @@
         }
     }
 
+    // ================= 依難度生成題目 =================
     function generateDynamicQuestions(totalCount = 20) {
         const questions = [];
 
         for (let i = 0; i < totalCount; i++) {
             let type;
-            if (selectedDifficulty === 'easy') {
-                type = getRandomItem([0, 0, 1, 4]); // 聽音題幾率加倍
-            } else if (selectedDifficulty === 'normal') {
+
+            if (currentDifficulty === 'easy') {
+                // 簡單模式：聽音題(0) 幾率調高、色彩(1)、單一車站歸屬(4)
+                type = getRandomItem([0, 0, 1, 4]);
+            } else if (currentDifficulty === 'normal') {
+                // 一般模式：聽音題(0)、色彩(1)、生活轉乘(2)、車站歸屬(4)
                 type = getRandomItem([0, 1, 2, 4]);
             } else {
-                type = getRandomItem([0, 1, 2, 3, 4]); // 全題型
+                // 困難模式：全題型含魔王題(3)
+                type = getRandomItem([0, 1, 2, 3, 4]);
             }
 
             if (type === 0) {
+                // 聽音題
                 const targetAudio = getRandomItem(audioPool);
-                let distractorPool = targetAudio.category === "line" ? linesData.map(l => l.name + "進站音樂").filter(n => n !== targetAudio.answer) : soundOptionsPool.filter(s => s !== targetAudio.answer);
-                questions.push({ type: "audio", audioSrc: targetAudio.src, question: "【聽音搶答】請聽這段聲響，請問這是什麼？", correctText: targetAudio.answer, options: shuffle([targetAudio.answer, ...shuffle(distractorPool).slice(0, 3)]) });
+                let distractorPool = [];
+
+                if (targetAudio.category === "line") {
+                    distractorPool = linesData.map(l => l.name + "進站音樂").filter(n => n !== targetAudio.answer);
+                } else {
+                    distractorPool = soundOptionsPool.filter(s => s !== targetAudio.answer);
+                }
+
+                const wrongOptions = shuffle(distractorPool).slice(0, 3);
+                const options = shuffle([targetAudio.answer, ...wrongOptions]);
+
+                questions.push({
+                    type: "audio",
+                    audioSrc: targetAudio.src,
+                    question: "【簡單聽音題】請聽這段捷運音效/廣播音樂，請問這是什麼？",
+                    correctText: targetAudio.answer,
+                    options: options
+                });
+
             } else if (type === 1) {
+                // 路線色彩
                 const targetLine = getRandomItem(linesData);
-                questions.push({ type: "text", question: `請問「${targetLine.name}」的官方代表顏色是什麼？`, correctText: targetLine.color, options: shuffle([targetLine.color, ...shuffle(linesData.map(l => l.color).filter(c => c !== targetLine.color)).slice(0, 3)]) });
+                const allColors = linesData.map(l => l.color);
+                const wrongColors = shuffle(allColors.filter(c => c !== targetLine.color)).slice(0, 3);
+                const options = shuffle([targetLine.color, ...wrongColors]);
+
+                questions.push({
+                    type: "text",
+                    question: `請問「${targetLine.name}」的官方代表顏色是什麼？`,
+                    correctText: targetLine.color,
+                    options: options
+                });
+
             } else if (type === 2) {
+                // 生活轉乘題
                 const scenario = getRandomItem(lifeScenarios);
-                questions.push({ type: "text", question: `【生活題】${scenario.person}從「${scenario.from}」搭捷運去「${scenario.to}」，最佳轉乘站是？`, correctText: scenario.correctTransferStation, options: shuffle([scenario.correctTransferStation, ...scenario.wrongStations]) });
+                const options = shuffle([scenario.correctTransferStation, ...scenario.wrongStations]);
+                questions.push({
+                    type: "text",
+                    question: `【生活搭乘題】${scenario.person}從「${scenario.from}」搭捷運去「${scenario.to}」，最佳轉乘站是？`,
+                    correctText: scenario.correctTransferStation,
+                    options: options
+                });
+
             } else if (type === 3) {
+                // 魔王題
                 const godQ = getRandomItem(godQuestions);
-                questions.push({ type: "text", isGod: true, question: godQ.question, correctText: godQ.correctText, options: shuffle(godQ.options) });
+                questions.push({
+                    type: "text",
+                    isGod: true,
+                    question: godQ.question,
+                    correctText: godQ.correctText,
+                    options: shuffle(godQ.options)
+                });
+
             } else {
+                // 單一車站歸屬
                 const isBelong = Math.random() > 0.5;
                 const targetLine = getRandomItem(linesData);
                 const otherLines = linesData.filter(l => l.name !== targetLine.name);
+
                 if (isBelong) {
                     const correctStation = getRandomItem(targetLine.allStations);
-                    questions.push({ type: "text", question: `下列哪一個車站「屬於」${targetLine.name}？`, correctText: correctStation, options: shuffle([correctStation, ...shuffle(otherLines.map(l => getRandomItem(l.allStations))).slice(0, 3)]) });
+                    const wrongStations = shuffle(otherLines.map(l => getRandomItem(l.allStations))).slice(0, 3);
+                    const options = shuffle([correctStation, ...wrongStations]);
+
+                    questions.push({
+                        type: "text",
+                        question: `下列哪一個車站「屬於」${targetLine.name}？`,
+                        correctText: correctStation,
+                        options: options
+                    });
                 } else {
                     const correctStation = getRandomItem(getRandomItem(otherLines).allStations);
-                    questions.push({ type: "text", question: `下列哪一個車站「不屬於」${targetLine.name}？`, correctText: correctStation, options: shuffle([correctStation, ...shuffle(targetLine.allStations).slice(0, 3)]) });
+                    const wrongStations = getRandomSample(targetLine.allStations, 3);
+                    const options = shuffle([correctStation, ...wrongStations]);
+
+                    questions.push({
+                        type: "text",
+                        question: `下列哪一個車站「不屬於」${targetLine.name}？`,
+                        correctText: correctStation,
+                        options: options
+                    });
                 }
             }
         }
@@ -554,6 +661,8 @@
         examQuestions = generateDynamicQuestions(20);
         currentQuestionIndex = 0;
         score = 0;
+        document.getElementById('quiz-screen').style.display = 'block';
+        document.getElementById('result-screen').style.display = 'none';
         loadQuestion();
     }
 
@@ -598,31 +707,49 @@
 
     function playAudio() {
         if (!audioPlayer.src) return;
-        if (playMode === 'stealth') { audioPlayer.volume = 0.15; audioPlayer.playbackRate = 1.0; }
-        else if (playMode === 'fast') { audioPlayer.volume = 1.0; audioPlayer.playbackRate = 1.5; }
-        else { audioPlayer.volume = 1.0; audioPlayer.playbackRate = 1.0; }
+        
+        if (playMode === 'stealth') {
+            audioPlayer.volume = 0.15;
+            audioPlayer.playbackRate = 1.0;
+        } else if (playMode === 'fast') {
+            audioPlayer.volume = 1.0;
+            audioPlayer.playbackRate = 1.5;
+        } else {
+            audioPlayer.volume = 1.0;
+            audioPlayer.playbackRate = 1.0;
+        }
+
         audioPlayer.play();
     }
 
     function selectOption(btn) {
         if (answered) return;
         answered = true;
+
         const isCorrect = btn.dataset.correct === "true";
         playBeepSound(isCorrect);
 
-        if (isCorrect) { btn.classList.add('correct'); score++; } 
-        else {
+        if (isCorrect) {
+            btn.classList.add('correct');
+            score++;
+        } else {
             btn.classList.add('wrong');
-            optionsContainer.querySelectorAll('.option-btn').forEach(b => { if (b.dataset.correct === "true") b.classList.add('correct'); });
+            optionsContainer.querySelectorAll('.option-btn').forEach(b => {
+                if (b.dataset.correct === "true") b.classList.add('correct');
+            });
         }
+
         optionsContainer.querySelectorAll('.option-btn').forEach(b => b.style.pointerEvents = 'none');
         nextBtn.style.display = "block";
     }
 
     function nextQuestion() {
         currentQuestionIndex++;
-        if (currentQuestionIndex < examQuestions.length) loadQuestion();
-        else showResult();
+        if (currentQuestionIndex < examQuestions.length) {
+            loadQuestion();
+        } else {
+            showResult();
+        }
     }
 
     function showResult() {
@@ -633,8 +760,8 @@
         document.getElementById('pass-score').innerText = `${score} / ${total}`;
         
         let diffText = "🐣 簡單 (實習乘務員)";
-        if (selectedDifficulty === 'normal') diffText = "💳 一般 (隨行常客)";
-        if (selectedDifficulty === 'hard') diffText = "👑 困難 (特勤站長)";
+        if (currentDifficulty === 'normal') diffText = "💳 一般 (隨行常客)";
+        if (currentDifficulty === 'hard') diffText = "👑 困難 (特勤站長)";
         document.getElementById('pass-diff').innerText = diffText;
 
         let modeName = "標準模式";
@@ -651,10 +778,12 @@
         document.getElementById('pass-rank').innerText = rank;
     }
 
-    function backToMenu() {
-        document.getElementById('result-screen').style.display = 'none';
-        document.getElementById('start-screen').style.display = 'block';
+    function restartQuiz() {
+        initQuiz();
     }
+
+    // 初始化
+    changeDifficulty('easy');
 </script>
 
 </body>
