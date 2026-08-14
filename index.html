@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>台北捷運全路網動態大會考</title>
+    <title>台北捷運全路網神級動態大會考</title>
     <style>
         :root {
             --metro-blue: #0070BD;
@@ -28,7 +28,7 @@
             background-color: var(--card-bg);
             border-radius: 20px;
             box-shadow: 0 12px 35px rgba(0,0,0,0.15);
-            max-width: 500px;
+            max-width: 520px;
             width: 100%;
             padding: 25px;
             text-align: center;
@@ -76,6 +76,11 @@
             font-size: 0.85rem;
             font-weight: bold;
             margin-bottom: 10px;
+        }
+
+        .tag-badge.god-level {
+            background-color: #FFE1E1;
+            color: #D93838;
         }
 
         .mode-container {
@@ -208,7 +213,7 @@
 <div class="quiz-card">
     <div id="quiz-screen">
         <span class="tag-badge" id="type-badge">🎲 全路網動態題</span>
-        <h1 style="font-size: 1.3rem; margin: 5px 0;">全路網動態隨機 20 題</h1>
+        <h1 style="font-size: 1.3rem; margin: 5px 0;">台北捷運神級隨機考驗</h1>
         
         <div class="metro-line-progress">
             <div class="line-track"></div>
@@ -234,7 +239,7 @@
         <h1 style="font-size: 1.4rem; color: #333;">🎉 考驗完成！</h1>
         
         <div class="metro-pass">
-            <h2>TAIPEI METRO DYNAMIC PASS</h2>
+            <h2>TAIPEI METRO MASTER PASS</h2>
             <div class="pass-row">
                 <span>稱號稱謂：</span>
                 <strong id="pass-rank">捷運專家</strong>
@@ -249,7 +254,7 @@
             </div>
             <div class="pass-row">
                 <span>認證單位：</span>
-                <span>台北捷運動態演算考驗中心</span>
+                <span>台北捷運動態演算法驗證中心</span>
             </div>
         </div>
 
@@ -280,22 +285,21 @@
         } catch(e) {}
     }
 
-    // ================= 素材庫（修改處：移除 Music/ 前綴） =================
+    // 音檔素材庫 (包含廣播、轉乘提示聲、終點站聲音)
     const audioPool = [
-        { src: "淡水信義線.mp3", answer: "淡水信義線", category: "line" },
-        { src: "松山新店線.mp3", answer: "松山新店線", category: "line" },
-        { src: "板南線.mp3", answer: "板南線", category: "line" },
-        { src: "中和新蘆線.mp3", answer: "中和新蘆線", category: "line" },
-        { src: "環狀線.mp3", answer: "環狀線", category: "line" },
-        { src: "三鶯線.mp3", answer: "三鶯線", category: "line" },
+        { src: "淡水信義線.mp3", answer: "淡水信義線進站音樂", category: "line" },
+        { src: "松山新店線.mp3", answer: "松山新店線進站音樂", category: "line" },
+        { src: "板南線.mp3", answer: "板南線進站音樂", category: "line" },
+        { src: "中和新蘆線.mp3", answer: "中和新蘆線進站音樂", category: "line" },
+        { src: "環狀線.mp3", answer: "環狀線進站音樂", category: "line" },
+        { src: "三鶯線.mp3", answer: "三鶯線進站音樂", category: "line" },
         { src: "開門聲音.mp3", answer: "開門聲音", category: "sound" },
         { src: "關門聲音.mp3", answer: "關門聲音", category: "sound" },
         { src: "關門警示音.mp3", answer: "關門警示音", category: "sound" },
-        { src: "終點站.mp3", answer: "終點站廣播/提示", category: "sound" },
-        { src: "轉乘站.mp3", answer: "轉乘站廣播/提示", category: "sound" }
+        { src: "終點站.mp3", answer: "終點站廣播/提示音", category: "sound" },
+        { src: "轉乘站.mp3", answer: "轉乘站廣播/提示音", category: "sound" }
     ];
 
-    // ================= 全路網 100% 完整車站與色彩資料庫 =================
     const linesData = [
         { 
             name: "淡水信義線", 
@@ -325,11 +329,75 @@
         { 
             name: "三鶯線", 
             color: "天藍色", 
-            allStations: ["頂埔", "媽祖田", "椚樹腳", "埔頂", "富州", "三峽", "台北大學", "鶯歌", "陶瓷老街", "國華", "鶯歌桃福", "鳳鳴"]
+            allStations: ["頂埔", "媽祖田", "椚樹腳", "埔頂", "富州", "三峽", "台北大學", "鶯歌", "陶瓷老街", "國華", "鶯歌桃福", "鳳鸣"]
         }
     ];
 
-    const soundOptionsPool = ["開門聲音", "關門聲音", "關門警示音", "終點站廣播/提示", "轉乘站廣播/提示", "進站警示音", "緊急求救音"];
+    // 生活真實轉乘題目素材庫（動態生成情境）
+    const lifeScenarios = [
+        {
+            person: "小明",
+            from: "丹鳳站（中和新蘆線）",
+            to: "台北車站",
+            correctTransferStation: "民權西路站 / 忠孝新生站",
+            correctLines: "中和新蘆線 ➔ 淡水信義線 / 板南線",
+            wrongStations: ["大坪林站", "南京復興站", "忠孝復興站"],
+            wrongLines: ["中和新蘆線 ➔ 松山新店線", "板南線 ➔ 環狀線", "淡水信義線 ➔ 文湖線"]
+        },
+        {
+            person: "小華",
+            from: "板橋站（板南線）",
+            to: "中山站",
+            correctTransferStation: "台北車站",
+            correctLines: "板南線 ➔ 淡水信義線",
+            wrongStations: ["忠孝新生站", "東門站", "景安站"],
+            wrongLines: ["板南線 ➔ 松山新店線", "中和新蘆線 ➔ 淡水信義線", "環狀線 ➔ 板南線"]
+        },
+        {
+            person: "阿強",
+            from: "公館站（松山新店線）",
+            to: "市政府站",
+            correctTransferStation: "西門站 / 中正紀念堂站",
+            correctLines: "松山新店線 ➔ 板南線 / 淡水信義線",
+            wrongStations: ["民權西路站", "南勢角站", "頭前庄站"],
+            wrongLines: ["松山新店線 ➔ 中和新蘆線", "淡水信義線 ➔ 環狀線", "中和新蘆線 ➔ 板南線"]
+        },
+        {
+            person: "小美",
+            from: "景安站（環狀線/中和新蘆線）",
+            to: "淡水站",
+            correctTransferStation: "民權西路站",
+            correctLines: "中和新蘆線 ➔ 淡水信義線",
+            wrongStations: ["忠孝復興站", "西門站", "大坪林站"],
+            wrongLines: ["環狀線 ➔ 板南線", "松山新店線 ➔ 淡水信義線", "中和新蘆線 ➔ 松山新店線"]
+        }
+    ];
+
+    // 神級魔王題目庫
+    const godQuestions = [
+        {
+            question: "【神級魔王題】請問下列哪一個轉乘站「沒有」與中和新蘆線交會？",
+            correctText: "忠孝復興站",
+            options: ["忠孝復興站", "民權西路站", "忠孝新生站", "松江南京站"]
+        },
+        {
+            question: "【神級魔王題】台北捷運路網中，淡水信義線與松山新店線共交會於哪兩個車站？",
+            correctText: "中山站、中正紀念堂站",
+            options: ["中山站、中正紀念堂站", "台北車站、西門站", "東門站、古亭站", "民權西路站、松江南京站"]
+        },
+        {
+            question: "【神級魔王題】中和新蘆線往北過「大橋頭站」後，會分岔為往哪兩個終點站的路線？",
+            correctText: "迴龍 / 蘆洲",
+            options: ["迴龍 / 蘆洲", "南勢角 / 新竹", "淡水 / 象山", "松山 / 新店"]
+        },
+        {
+            question: "【神級魔王題】松山新店線的「小碧潭支線」，是在哪一個車站進行轉乘？",
+            correctText: "七張站",
+            options: ["七張站", "大坪林站", "新店站", "景美站"]
+        }
+    ];
+
+    const soundOptionsPool = ["開門聲音", "關門聲音", "關門警示音", "終點站廣播/提示音", "轉乘站廣播/提示音", "進站警示音", "緊急求救音"];
 
     function getRandomItem(arr) {
         return arr[Math.floor(Math.random() * arr.length)];
@@ -343,18 +411,21 @@
         return shuffle(arr).slice(0, count);
     }
 
+    // ================= 全動態隨機組題引擎 =================
     function generateDynamicQuestions(totalCount = 20) {
         const questions = [];
 
         for (let i = 0; i < totalCount; i++) {
-            const type = Math.floor(Math.random() * 3);
+            // 隨機題型抽樣 (0:聽音題, 1:生活轉乘題, 2:神級題目, 3:路線色彩, 4:車站歸屬)
+            const type = Math.floor(Math.random() * 5);
 
             if (type === 0) {
+                // 1. 聽音題 (包含廣播/終點站/轉乘音樂)
                 const targetAudio = getRandomItem(audioPool);
                 let distractorPool = [];
 
                 if (targetAudio.category === "line") {
-                    distractorPool = linesData.map(l => l.name).filter(n => n !== targetAudio.answer);
+                    distractorPool = linesData.map(l => l.name + "進站音樂").filter(n => n !== targetAudio.answer);
                 } else {
                     distractorPool = soundOptionsPool.filter(s => s !== targetAudio.answer);
                 }
@@ -365,12 +436,47 @@
                 questions.push({
                     type: "audio",
                     audioSrc: targetAudio.src,
-                    question: "請聽這段音效/音樂，請問這是什麼？",
+                    question: "請聽這段捷運音效/廣播音樂，請問這是什麼？",
                     correctText: targetAudio.answer,
                     options: options
                 });
 
             } else if (type === 1) {
+                // 2. 生活情境轉乘題 (隨機問「轉乘站」或「路線搭乘順序」)
+                const scenario = getRandomItem(lifeScenarios);
+                const isStationQuestion = Math.random() > 0.5;
+
+                if (isStationQuestion) {
+                    const options = shuffle([scenario.correctTransferStation, ...scenario.wrongStations]);
+                    questions.push({
+                        type: "text",
+                        question: `【生活搭乘題】${scenario.person}從「${scenario.from}」想搭捷運去「${scenario.to}」，他最合適的轉乘車站是？`,
+                        correctText: scenario.correctTransferStation,
+                        options: options
+                    });
+                } else {
+                    const options = shuffle([scenario.correctLines, ...scenario.wrongLines]);
+                    questions.push({
+                        type: "text",
+                        question: `【生活搭乘題】${scenario.person}從「${scenario.from}」搭捷運到「${scenario.to}」，路線應該如何轉乘？`,
+                        correctText: scenario.correctLines,
+                        options: options
+                    });
+                }
+
+            } else if (type === 2) {
+                // 3. 神級魔王難度題
+                const godQ = getRandomItem(godQuestions);
+                questions.push({
+                    type: "text",
+                    isGod: true,
+                    question: godQ.question,
+                    correctText: godQ.correctText,
+                    options: shuffle(godQ.options)
+                });
+
+            } else if (type === 3) {
+                // 4. 路線色彩題
                 const targetLine = getRandomItem(linesData);
                 const allColors = linesData.map(l => l.color);
                 const wrongColors = shuffle(allColors.filter(c => c !== targetLine.color)).slice(0, 3);
@@ -384,22 +490,34 @@
                 });
 
             } else {
+                // 5. 單一車站屬於/不屬於題
+                const isBelong = Math.random() > 0.5;
                 const targetLine = getRandomItem(linesData);
-                const correctStations = getRandomSample(targetLine.allStations, 3).join("、");
+                const otherLines = linesData.filter(l => l.name !== targetLine.name);
 
-                const wrongLines = linesData.filter(l => l.name !== targetLine.name);
-                const wrongStationGroups = shuffle(wrongLines).slice(0, 3).map(l => {
-                    return getRandomSample(l.allStations, 3).join("、");
-                });
+                if (isBelong) {
+                    const correctStation = getRandomItem(targetLine.allStations);
+                    const wrongStations = shuffle(otherLines.map(l => getRandomItem(l.allStations))).slice(0, 3);
+                    const options = shuffle([correctStation, ...wrongStations]);
 
-                const options = shuffle([correctStations, ...wrongStationGroups]);
+                    questions.push({
+                        type: "text",
+                        question: `下列哪一個車站「屬於」${targetLine.name}？`,
+                        correctText: correctStation,
+                        options: options
+                    });
+                } else {
+                    const correctStation = getRandomItem(getRandomItem(otherLines).allStations);
+                    const wrongStations = getRandomSample(targetLine.allStations, 3);
+                    const options = shuffle([correctStation, ...wrongStations]);
 
-                questions.push({
-                    type: "text",
-                    question: `下列哪一個選項的車站，全部屬於「${targetLine.name}」？`,
-                    correctText: correctStations,
-                    options: options
-                });
+                    questions.push({
+                        type: "text",
+                        question: `下列哪一個車站「不屬於」${targetLine.name}？`,
+                        correctText: correctStation,
+                        options: options
+                    });
+                }
             }
         }
         return questions;
@@ -443,12 +561,19 @@
         document.getElementById('question-desc').innerText = `第 ${currentQuestionIndex + 1} 題 / 共 ${examQuestions.length} 題\n${data.question}`;
         optionsContainer.innerHTML = "";
 
+        const badge = document.getElementById('type-badge');
+        if (data.isGod) {
+            badge.className = "tag-badge god-level";
+            badge.innerText = '🔥 隱藏神級魔王題';
+        } else {
+            badge.className = "tag-badge";
+            badge.innerText = data.type === 'audio' ? '🔊 廣播與聲響題' : '🎲 全路網生活題';
+        }
+
         if (data.type === 'audio') {
-            document.getElementById('type-badge').innerText = '🔊 現場隨機聽音題';
             audioBtn.style.display = 'inline-flex';
             audioPlayer.src = data.audioSrc;
         } else {
-            document.getElementById('type-badge').innerText = '🎲 現場隨機知識題';
             audioBtn.style.display = 'none';
             audioPlayer.src = "";
         }
@@ -524,7 +649,7 @@
 
         let rank = "捷運普通卡";
         const ratio = score / total;
-        if (ratio === 1) rank = "🏆 捷運神級站長 Pass";
+        if (ratio === 1) rank = "👑 捷運傳奇站長 (滿分神人)";
         else if (ratio >= 0.8) rank = "💳 捷運資深司機 Pass";
         else if (ratio >= 0.5) rank = "🎫 捷運忠實常客 Pass";
         
