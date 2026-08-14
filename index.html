@@ -36,7 +36,6 @@
             position: relative;
         }
 
-        /* 頂部難度切換列 */
         .difficulty-selector {
             display: flex;
             justify-content: center;
@@ -66,7 +65,6 @@
             box-shadow: 0 2px 8px rgba(0,112,189,0.3);
         }
 
-        /* 難度說明卡片 */
         .diff-desc-box {
             background-color: #F8F9FA;
             border: 2px dashed #CBD5E1;
@@ -108,7 +106,6 @@
             transform: scale(0.98);
         }
 
-        /* 右上角浮動路線圖按鈕 */
         .floating-hint-btn {
             position: absolute;
             top: 15px;
@@ -132,7 +129,6 @@
             cursor: not-allowed;
         }
 
-        /* 彈出視窗 Modal */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -364,7 +360,7 @@
     </div>
 
     <div id="intro-screen">
-        <h1 style="font-size: 1.4rem; color: var(--metro-blue); margin-bottom: 15px;">🚇 台北捷運大會考</h1>
+        <h1 style="font-size: 1.4rem; color: var(--metro-blue); margin-bottom: 15px;">🚇 台北捷運全路網大會考</h1>
         
         <div class="diff-desc-box" id="diff-desc-content">
             </div>
@@ -461,6 +457,7 @@
         { src: "中和新蘆線.mp3", answer: "中和新蘆線進站音樂", category: "line" },
         { src: "環狀線.mp3", answer: "環狀線進站音樂", category: "line" },
         { src: "三鶯線.mp3", answer: "三鶯線進站音樂", category: "line" },
+        { src: "文湖線警示音.mp3", answer: "文湖線離站/警示音", category: "sound" },
         { src: "開門聲音.mp3", answer: "開門聲音", category: "sound" },
         { src: "關門聲音.mp3", answer: "關門聲音", category: "sound" },
         { src: "關門警示音.mp3", answer: "關門警示音", category: "sound" },
@@ -468,33 +465,65 @@
         { src: "轉乘站.mp3", answer: "轉乘站廣播/提示音", category: "sound" }
     ];
 
+    // 校正後的精確路線資料（包含文湖線與圖中正確三鶯線站名）
     const linesData = [
-        { name: "淡水信義線", color: "紅色", allStations: ["淡水", "紅樹林", "竹圍", "關渡", "忠義", "復興崗", "北投", "奇岩", "唭哩岸", "石牌", "明德", "芝山", "士林", "劍潭", "圓山", "民權西路", "雙連", "中山", "台北車站", "台大醫院", "中正紀念堂", "東門", "大安森林公園", "大安", "信義安和", "台北101/世貿", "象山"] },
-        { name: "松山新店線", color: "綠色", allStations: ["松山", "南京三民", "台北小巨蛋", "南京復興", "松江南京", "中山", "北門", "西門", "小南門", "中正紀念堂", "古亭", "台電大樓", "公館", "萬隆", "景美", "大坪林", "七張", "新店區公所", "新店", "小碧潭"] },
-        { name: "板南線", color: "藍色", allStations: ["南港展覽館", "南港", "昆陽", "後山埤", "永春", "市政府", "國父紀念館", "忠孝敦化", "忠孝復興", "忠孝新生", "善導寺", "台北車站", "西門", "龍山寺", "江子翠", "新埔", "板橋", "府中", "亞東醫院", "海山", "土城", "永寧", "頂埔"] },
-        { name: "中和新蘆線", color: "橘色", allStations: ["南勢角", "景安", "永安市場", "頂溪", "古亭", "東門", "忠孝新生", "松江南京", "行天宮", "中山國小", "民權西路", "大橋頭", "三重國小", "三和國中", "徐匯中學", "三民高中", "蘆洲", "三重", "菜寮", "先嗇宮", "頭前庄", "新莊", "輔大", "丹鳳", "迴龍"] },
-        { name: "環狀線", color: "黃色", allStations: ["新北產業園區", "幸福", "頭前庄", "新埔民生", "板橋", "板新", "中原", "橋和", "中和", "景安", "景平", "秀朗橋", "十四張", "大坪林"] },
-        { name: "三鶯線", color: "天藍色", allStations: ["頂埔", "媽祖田", "椚樹腳", "埔頂", "富州", "三峽", "台北大學", "鶯歌", "陶瓷老街", "國華", "鶯歌桃福", "鳳鳴"] }
+        { 
+            name: "文湖線", 
+            color: "棕色", 
+            allStations: ["南港展覽館", "南港軟體園區", "東湖", "葫洲", "大湖公園", "內湖", "文德", "港墘", "西湖", "劍南路", "大直", "松山機場", "中山國中", "南京復興", "忠孝復興", "大安", "科技大樓", "六張犁", "麟光", "辛亥", "萬芳醫院", "萬芳社區", "木柵", "動物園"] 
+        },
+        { 
+            name: "淡水信義線", 
+            color: "紅色", 
+            allStations: ["淡水", "紅樹林", "竹圍", "關渡", "忠義", "復興崗", "北投", "奇岩", "唭哩岸", "石牌", "明德", "芝山", "士林", "劍潭", "圓山", "民權西路", "雙連", "中山", "台北車站", "台大醫院", "中正紀念堂", "東門", "大安森林公園", "大安", "信義安和", "台北101/世貿", "象山"] 
+        },
+        { 
+            name: "松山新店線", 
+            color: "綠色", 
+            allStations: ["松山", "南京三民", "台北小巨蛋", "南京復興", "松江南京", "中山", "北門", "西門", "小南門", "中正紀念堂", "古亭", "台電大樓", "公館", "萬隆", "景美", "大坪林", "七張", "新店區公所", "新店", "小碧潭"] 
+        },
+        { 
+            name: "板南線", 
+            color: "藍色", 
+            allStations: ["南港展覽館", "南港", "昆陽", "後山埤", "永春", "市政府", "國父紀念館", "忠孝敦化", "忠孝復興", "忠孝新生", "善導寺", "台北車站", "西門", "龍山寺", "江子翠", "新埔", "板橋", "府中", "亞東醫院", "海山", "土城", "永寧", "頂埔"] 
+        },
+        { 
+            name: "中和新蘆線", 
+            color: "橘色", 
+            allStations: ["南勢角", "景安", "永安市場", "頂溪", "古亭", "東門", "忠孝新生", "松江南京", "行天宮", "中山國小", "民權西路", "大橋頭", "三重國小", "三和國中", "徐匯中學", "三民高中", "蘆洲", "三重", "菜寮", "先嗇宮", "頭前庄", "新莊", "輔大", "丹鳳", "迴龍"] 
+        },
+        { 
+            name: "環狀線", 
+            color: "黃色", 
+            allStations: ["新北產業園區", "幸福", "頭前庄", "新埔民生", "板橋", "板新", "中原", "橋和", "中和", "景安", "景平", "秀朗橋", "十四張", "大坪林"] 
+        },
+        { 
+            name: "三鶯線", 
+            color: "天藍色", 
+            allStations: ["頂埔", "媽祖田", "挖子", "橫溪", "龍埔", "三峽", "台北大學", "鶯歌車站", "陶瓷老街", "國華", "永吉公園", "鶯桃福德"] 
+        }
     ];
 
     const lifeScenarios = [
         { person: "小明", from: "丹鳳站（中和新蘆線）", to: "台北車站", correctTransferStation: "民權西路站 / 忠孝新生站", wrongStations: ["大坪林站", "南京復興站", "忠孝復興站"] },
         { person: "小華", from: "板橋站（板南線）", to: "中山站", correctTransferStation: "台北車站", wrongStations: ["忠孝新生站", "東門站", "景安站"] },
-        { person: "阿強", from: "公館站（松山新店線）", to: "市政府站", correctTransferStation: "西門站 / 中正紀念堂站", wrongStations: ["民權西路站", "南勢角站", "頭前庄站"] }
+        { person: "阿強", from: "公館站（松山新店線）", to: "市政府站", correctTransferStation: "西門站 / 中正紀念堂站", wrongStations: ["民權西路站", "南勢角站", "頭前庄站"] },
+        { person: "小妹", from: "動物園站（文湖線）", to: "市政府站", correctTransferStation: "大安站 / 忠孝復興站", wrongStations: ["中山站", "台北車站", "松江南京站"] }
     ];
 
     const godQuestions = [
         { question: "【神級魔王題】請問下列哪一個轉乘站「沒有」與中和新蘆線交會？", correctText: "忠孝復興站", options: ["忠孝復興站", "民權西路站", "忠孝新生站", "松江南京站"] },
         { question: "【神級魔王題】台北捷運路網中，淡水信義線與松山新店線共交會於哪兩個車站？", correctText: "中山站、中正紀念堂站", options: ["中山站、中正紀念堂站", "台北車站、西門站", "東門站、古亭站", "民權西路站、松江南京站"] },
-        { question: "【神級魔王題】中和新蘆線往北過「大橋頭站」後，會分岔為往哪兩個終點站的路線？", correctText: "迴龍 / 蘆洲", options: ["迴龍 / 蘆洲", "南勢角 / 新竹", "淡水 / 象山", "松山 / 新店"] }
+        { question: "【神級魔王題】中和新蘆線往北過「大橋頭站」後，會分岔為往哪兩個終點站的路線？", correctText: "迴龍 / 蘆洲", options: ["迴龍 / 蘆洲", "南勢角 / 新竹", "淡水 / 象山", "松山 / 新店"] },
+        { question: "【神級魔王題】請問文湖線（BR）與板南線（BL）交會於哪兩個車站？", correctText: "忠孝復興站、南港展覽館站", options: ["忠孝復興站、南港展覽館站", "南京復興站、大安站", "台北車站、西門站", "松江南京站、忠孝新生站"] }
     ];
 
-    const soundOptionsPool = ["開門聲音", "關門聲音", "關門警示音", "終點站廣播/提示音", "轉乘站廣播/提示音", "進站警示音", "緊急求救音"];
+    const soundOptionsPool = ["開門聲音", "關門聲音", "關門警示音", "終點站廣播/提示音", "轉乘站廣播/提示音", "進站警示音", "文湖線離站/警示音"];
 
     function getRandomItem(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
     function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
 
-    let selectedDifficulty = 'easy'; // easy, normal, hard
+    let selectedDifficulty = 'easy';
     let remainingHints = Infinity;
     let examQuestions = [];
     let currentQuestionIndex = 0;
@@ -509,13 +538,11 @@
     const hintBtn = document.getElementById('hint-btn');
     const mapModal = document.getElementById('map-modal');
 
-    // 切換難度 (說明模式)
     function selectDifficulty(diff) {
         selectedDifficulty = diff;
         document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(`btn-${diff}`).classList.add('active');
 
-        // 如果在遊戲中切換難度，重置回說明頁面
         resetToIntro();
         renderDiffDescription();
     }
@@ -544,7 +571,7 @@
             box.innerHTML = `
                 <h3>👑 困難模式 (特勤站長)</h3>
                 <ul>
-                    <li><strong>題型內容：</strong>全題型解鎖，包含高難度<span style="color:#D93838; font-weight:bold;">【隱藏神級魔王題】</span>！</li>
+                    <li><strong>題型內容：</strong>全題型解鎖（包含文湖線全區題與高難度<span style="color:#D93838; font-weight:bold;">【神級魔王題】</span>）！</li>
                     <li><strong>提示次數：</strong><span style="color:#D93838; font-weight:bold;">【無提示】</span>，全憑硬實力挑戰！</li>
                     <li><strong>適合對象：</strong>對台北捷運路網瞭如指掌的高手。</li>
                 </ul>
@@ -606,11 +633,11 @@
         for (let i = 0; i < totalCount; i++) {
             let type;
             if (selectedDifficulty === 'easy') {
-                type = getRandomItem([0, 0, 1, 4]); // 聽音題提高
+                type = getRandomItem([0, 0, 1, 4]);
             } else if (selectedDifficulty === 'normal') {
                 type = getRandomItem([0, 1, 2, 4]);
             } else {
-                type = getRandomItem([0, 1, 2, 3, 4]); // 包含魔王題
+                type = getRandomItem([0, 1, 2, 3, 4]);
             }
 
             if (type === 0) {
@@ -756,7 +783,6 @@
         document.getElementById('intro-screen').style.display = 'block';
     }
 
-    // 預設初始化簡單模式說明
     renderDiffDescription();
 </script>
 
